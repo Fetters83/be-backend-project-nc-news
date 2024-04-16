@@ -1,10 +1,20 @@
 const express = require('express')
 const app = express()
-const {getAllTopics} = require('./controllers/topics.controllers')
+const {getAllTopics,getAllEndPoints} = require('./controllers/topics.controllers')
+const endpoints = require('./endpoints.json')
 
 app.use(express.json())
 
 app.get('/api/topics',getAllTopics)
+
+app.get('/api',(req,res,next)=>{
+    console.log(res)
+    res.status(200).send({endpoints})
+    
+
+})
+
+
 
 
 

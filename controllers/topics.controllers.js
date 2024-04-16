@@ -1,4 +1,4 @@
-const {fetchAllTopics} = require('../models/topics.models')
+const {fetchAllTopics,fetchAllEndPoints} = require('../models/topics.models')
 
 
 function getAllTopics(req,res,next){
@@ -6,5 +6,9 @@ function getAllTopics(req,res,next){
       res.status(200).send(body.rows)
     })
 }
+
+
+
+
 
 module.exports = {getAllTopics}
