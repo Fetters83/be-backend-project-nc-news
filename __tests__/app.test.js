@@ -4,6 +4,7 @@ const seed = require('../db/seeds/seed')
 const data = require('../db/data/test-data/index')
 const express = require('express')
 const app = require('../app')
+const endpoints = require('../endpoints.json')
 
 beforeAll(()=>seed(data))
 afterAll(()=>db.end())
@@ -35,5 +36,31 @@ describe('api/topics',()=>{
          
         })
 
+    })
+})
+
+describe('/api',()=>{
+    test('GET:200 responds with an object detailing all available endpoints in the app',()=>{
+        return request(app)
+        .get('/api')
+        .expect(200)
+         .then(({body:{endpoints}})=>{
+          
+          for(let endpoint in endpoints){
+            if(endpoint!="GET /api"){
+                  expect(endpoints[endpoint]).toEqual(
+                    expect.objectContaining({
+                        description: expect.any(String),
+                        queries: expect.any(Array),
+                        exampleResponse: expect.any(Object)
+
+                    })
+                )
+            }
+            
+          
+            
+          }
+        })
     })
 })
