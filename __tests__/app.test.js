@@ -37,3 +37,43 @@ describe('api/topics',()=>{
 
     })
 })
+describe('api/articles/:article_id',()=>{
+    test('GET:200 responds with an object asscoiated with the article id',()=>{
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then(({body:{articles}})=>{
+                articles.forEach((article)=>{
+                expect(article).toEqual(
+                    expect.objectContaining({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic:expect.any(String),
+                        author:expect.any(String),
+                        body:expect.any(String),
+                        created_at:expect.any(String),
+                        votes:expect.any(Number),
+                        article_img_url:expect.any(String)
+                    })
+                )
+            })
+            expect(articles).toHaveLength(1)
+         })
+    })
+    test('GET:404 when artist_id is of a valid data type, but does not exist,obj returned with a error message of article not found',()=>{
+        return request(app)
+        .get('/api/articles/9999')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe("article not found")
+        })
+    })
+    test('GET:400 when artist_id is of an invalid data type, object returned with err msg of Bad request',()=>{
+        return request(app)
+        .get('/api/articles/invalid_id')
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe("Bad request")
+        })
+    })
+})
