@@ -48,8 +48,7 @@ describe('/api',()=>{
           
           for(let endpoint in endpoints){
             if(endpoint!="GET /api"){
-                console.log(endpoints[endpoint])
-                expect(endpoints[endpoint]).toEqual(
+                  expect(endpoints[endpoint]).toEqual(
                     expect.objectContaining({
                         description: expect.any(String),
                         queries: expect.any(Array),

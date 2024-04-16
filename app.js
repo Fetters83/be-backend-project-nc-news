@@ -8,7 +8,6 @@ app.use(express.json())
 app.get('/api/topics',getAllTopics)
 
 app.get('/api',(req,res,next)=>{
-    console.log(res)
     res.status(200).send({endpoints})
     
 
