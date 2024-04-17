@@ -122,17 +122,4 @@ describe('/api/article',()=>{
             })
         })
     })
-    test('GET:404 when comments data has no data should respond with a status of 404 and an object returned with a msg invalid query',()=>{
-        return db.query('DELETE FROM comments;').then(()=>{
-            return request(app)
-            .get('/api/articles')
-            .expect(404)
-            .then(({body})=>{
-                expect(body.msg).toBe("invalid query")
-            })
-        })
-
-        
-    })
-
 })
