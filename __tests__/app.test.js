@@ -100,3 +100,39 @@ describe('api/articles/:article_id',()=>{
         })
     })
 })
+describe('/api/article',()=>{
+    test('GET:200 should return an array of article objects with the correct properties',()=>{
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body:{articles}})=>{
+            articles.forEach((article)=>{
+                expect(article).toEqual(
+                    expect.objectContaining({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic:expect.any(String),
+                        author:expect.any(String),
+                        created_at:expect.any(String),
+                        votes:expect.any(Number),
+                        article_img_url:expect.any(String),
+                        comment_count: expect.any(Number)
+                    })
+                )
+            })
+        })
+    })
+    test('GET:404 when comments data has no data should respond with a status of 404 and an object returned with a msg invalid query',()=>{
+        return db.query('DELETE FROM comments;').then(()=>{
+            return request(app)
+            .get('/api/articles')
+            .expect(404)
+            .then(({body})=>{
+                expect(body.msg).toBe("invalid query")
+            })
+        })
+
+        
+    })
+
+})

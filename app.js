@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const {getAllTopics} = require('./controllers/topics.controllers')
-const {getArticleById} = require('./controllers/articles.controllers')
+const {getArticleById,getAllArticles} = require('./controllers/articles.controllers')
 const endpoints = require('./endpoints.json')
 app.use(express.json())
 
@@ -10,10 +10,10 @@ app.get('/api/topics',getAllTopics)
 
 app.get('/api',(req,res,next)=>{
     res.status(200).send({endpoints})
-    
-
 })
 app.get('/api/articles/:article_id',getArticleById)
+
+app.get('/api/articles',getAllArticles)
 
 //Error handling middleware
 
