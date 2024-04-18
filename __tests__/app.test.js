@@ -122,8 +122,8 @@ describe('/api/article',()=>{
             })
         })
     })
-   })
-   describe('/api/articles/:article_id/comments',()=>{
+})
+describe('/api/articles/:article_id/comments',()=>{
     test('GET:200 should return an array of comments linked',()=>{
         return request(app)
         .get('/api/articles/1/comments')
