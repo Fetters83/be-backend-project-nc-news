@@ -122,17 +122,44 @@ describe('/api/article',()=>{
             })
         })
     })
-    test('GET:404 when comments data has no data should respond with a status of 404 and an object returned with a msg invalid query',()=>{
-        return db.query('DELETE FROM comments;').then(()=>{
-            return request(app)
-            .get('/api/articles')
-            .expect(404)
-            .then(({body})=>{
-                expect(body.msg).toBe("invalid query")
+   })
+   describe('/api/articles/:article_id/comments',()=>{
+    test('GET:200 should return an array of comments linked',()=>{
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({body:{comments}})=>{
+            expect(comments).toHaveLength(11)
+            comments.forEach((comment)=>{
+                expect(comment).toEqual(
+                    expect.objectContaining({
+                        comment_id:expect.any(Number),
+                        votes:expect.any(Number),
+                        created_at:expect.any(String),
+                        author:expect.any(String),
+                        body:expect.any(String),
+                        article_id:expect.any(Number)
+                    })
+                )
             })
+            expect(comments).toBeSortedBy('created_at',{
+                descending:true,})
         })
-
-        
     })
-
+    test('GET: 404 when passed article_id is of a valid type but no comments are found',()=>{
+        return request(app)
+        .get('/api/articles/9999/comments')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('no comments found')
+        })
+    })
+    test('GET: 400 when passed article_id of invalid type object returned with an err message of Bad request',()=>{
+        return request(app)
+        .get('/api/articles/invalid_id/comments')
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe('Bad request')
+        })
+    })
 })
