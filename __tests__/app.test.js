@@ -312,3 +312,25 @@ describe('/api/comments/:comment_id',()=>{
                 })
             })          
     })
+
+    describe('/api/user',()=>{
+        test('GET:200 should respond with an array of objects of all users and the correct properties',()=>{
+            return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then(({body:{users}})=>{
+                expect(users).toHaveLength(4)
+                users.forEach((user)=>{
+                    expect(user).toEqual(
+                        expect.objectContaining({
+                            username: expect.any(String),
+                            name:expect.any(String),
+                            avatar_url:expect.any(String)
+                        })
+                    )
+            
+                })
+            })
+        })
+    })
+    
