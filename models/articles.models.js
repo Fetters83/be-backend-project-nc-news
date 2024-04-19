@@ -1,4 +1,5 @@
 const db = require('../db/connection')
+const format = require('pg-format')
 
 function fetchArticleById(article_id){
      let queryString = "SELECT * FROM articles WHERE article_id=$1;"
@@ -29,4 +30,34 @@ function fetchAllArticles(){
     })
 }
 
-module.exports = {fetchArticleById,fetchAllArticles}
+function getVoteCountByArticleId(article_id){
+    const getVotesQuery = ('SELECT votes FROM articles WHERE article_id=$1;')
+    const articleIdRegex = /^\d*$/
+
+    if(articleIdRegex.test(article_id) === false){
+        return Promise.reject({status:400,msg:'Bad request'})
+    }
+
+    return db.query(getVotesQuery,[article_id]).then(({rows:[votes]})=>{
+       
+        if(!votes){
+        return Promise.reject({status:404,msg:'article does not exist'})
+       }
+
+        return votes
+    })
+}
+
+ function updateVoteByArticleId(updateVotes, article_id){
+    const updateVoteQuery = ('UPDATE articles SET votes=$1 WHERE article_id=$2 RETURNING *;')
+  
+    if(typeof updateVotes != 'number'){
+        return Promise.reject({status:400,msg:'vote increment must be a number'})
+    }
+    
+    return db.query(updateVoteQuery,[updateVotes,article_id]).then(({rows})=>{
+            return rows[0]
+    })
+} 
+
+module.exports = {fetchArticleById,fetchAllArticles,getVoteCountByArticleId,updateVoteByArticleId}
