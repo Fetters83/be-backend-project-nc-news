@@ -98,5 +98,19 @@
       }
 
     }
+  },
+  "DELETE /api/comments/:comment_id":{
+    "description": "Removes comment by specified comment_id, an object containg the deleted row is returned",
+    "queries":["comment_id"],
+    "exampleResponse":{
+      "deleteComment": {
+        "comment_id": 19,
+        "body": "my first comment",
+        "article_id": 1,
+        "author": "rogersop",
+        "votes": 0,
+        "created_at": "2024-04-19T13:56:32.776Z"
+      }
+    }
   }
 }
