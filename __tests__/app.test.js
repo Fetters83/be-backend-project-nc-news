@@ -163,3 +163,69 @@ describe('/api/articles/:article_id/comments',()=>{
         })
     })
 })
+describe('/api/articles/:article_id/comments',()=>{
+    test('POST:201 when passed an object with a username and body, body text is posted in the comments table to the specified article_id',()=>{
+        const newComment = {username:"rogersop",body:"my first comment"};
+        return request(app)
+        .post('/api/articles/1/comments')
+        .expect(201)
+        .send(newComment)
+        .then(({body})=>{
+            expect(body).toEqual({comment:{body:"my first comment"}})
+            expect(typeof body.comment.body).toBe("string")
+            
+        })
+    })
+    test('POST:404 when an article_id of the correct type but non existent is passed, an object is returned with a 404 status and error message',()=>{
+        const newComment = {username:"rogersop",body:"my first comment"};
+        return request(app)
+        .post('/api/articles/9999/comments')
+        .expect(404)
+        .send(newComment)
+        .then(({body})=>{
+            expect(body.msg).toBe("this article does not exist")
+            
+            
+        })
+    
+    })
+    test('POST:404 when a username of the correct type is passed but does not exist in the user table, an object is returned with a 404 status and error message',()=>{
+        const newComment = {username:"invalidname",body:"my first comment"};
+        return request(app)
+        .post('/api/articles/1/comments')
+        .expect(404)
+        .send(newComment)
+        .then(({body})=>{
+            expect(body.msg).toBe("you are not yet a valid user")
+            
+            
+        })
+    
+    })
+    test('POST:400 when a username of an incorrect type is passed, an object is returned with a 404 status and error message',()=>{
+        const newComment = {username:1,body:"my first comment"};
+        return request(app)
+        .post('/api/articles/1/comments')
+        .expect(400)
+        .send(newComment)
+        .then(({body})=>{
+            expect(body.msg).toBe("Bad request")
+            
+            
+        })
+    
+    })
+    test('POST:400 when a comment of an incorrect data type is passed, an object is returned with a 404 status and error message',()=>{
+        const newComment = {username:"rogersop",body:1};
+        return request(app)
+        .post('/api/articles/1/comments')
+        .expect(400)
+        .send(newComment)
+        .then(({body})=>{
+            expect(body.msg).toBe("Bad request")
+            
+            
+        })
+    
+    })
+})
