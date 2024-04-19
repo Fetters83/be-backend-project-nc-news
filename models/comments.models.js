@@ -34,4 +34,17 @@ function insertCommentByArticleId(article_id,{username,body}){
     })
 }
 
-module.exports = {fetchCommentsByArticleId,insertCommentByArticleId}
+function deleteCommentById(comment_id){
+
+    const deleteCommentStr = `DELETE FROM comments WHERE comment_id=$1 RETURNING *;`
+    return db.query(deleteCommentStr,[comment_id]).then(({rows})=>{
+       
+        if(rows.length === 0){
+           return Promise.reject({status:404,msg:'comment does not exist'})
+        } 
+          return rows[0]
+    })
+
+}
+
+module.exports = {fetchCommentsByArticleId,insertCommentByArticleId,deleteCommentById}

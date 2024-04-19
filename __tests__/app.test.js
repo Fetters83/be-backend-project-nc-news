@@ -279,3 +279,36 @@ describe('/api/articles/:article_id',()=>{
         })
     })
 })
+describe('/api/comments/:comment_id',()=>{
+    test('DELETE:204 when passed a valid comment_id, an object with the status 204 is returned',()=>{
+                           
+        db.query(`SELECT COUNT(comment_id) FROM comments;`).then(({rows})=>{
+            expect(rows[0].count).toBe("19")
+        })
+    
+        return request(app)
+        .delete('/api/comments/19')
+        .expect(204).then(()=>{
+            db.query(`SELECT COUNT(comment_id) FROM comments;`).then(({rows})=>{
+                expect(rows[0].count).toBe("18")
+            })
+        })
+
+        })
+    test('DELETE:404 when passed a non existent valid comment_id, an object with the status 404 and error message is returned',()=>{
+        return request(app)
+        .delete('/api/comments/20')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('comment does not exist')
+            })
+        })
+    test('DELETE:400 when passed a comment_id of an incorrect data type, an object with the status 400 and error message is returned',()=>{
+        return request(app)
+        .delete('/api/comments/invalid_id')
+        .expect(400)
+        .then(({body})=>{
+         expect(body.msg).toBe('Bad request')
+                })
+            })          
+    })
