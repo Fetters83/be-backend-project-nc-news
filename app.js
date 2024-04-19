@@ -3,6 +3,7 @@ const app = express()
 const {getAllTopics} = require('./controllers/topics.controllers')
 const {getArticleById,getAllArticles,postVoteByArticleId} = require('./controllers/articles.controllers')
 const {getCommentsByArticleId,postCommentByArticleId,removeCommentById} = require('./controllers/comments.controllers')
+const {getAllUsers} = require('./controllers/users.contoller')
 const endpoints = require('./endpoints.json')
 app.use(express.json())
 
@@ -22,6 +23,8 @@ app.get('/api/articles/:article_id/comments',getCommentsByArticleId)
 app.post('/api/articles/:article_id/comments',postCommentByArticleId)
 
 app.delete('/api/comments/:comment_id',removeCommentById)
+
+app.get('/api/users',getAllUsers)
 
 //Error handling middleware
 
