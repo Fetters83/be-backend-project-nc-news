@@ -71,5 +71,14 @@
         ]
       }
     }
+  },
+  "POST /api/articles/:article_id/comments":{
+    "description":"Serves as an object representing a posted comment on an aricle defined by the passed article_id",
+    "queries":["body","article_id","author"],
+    "exampleResponse":{
+      "comment":
+      {"body":"This article turned out to be very information"
+      }
+    }
   }
 }
