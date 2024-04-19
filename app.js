@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const {getAllTopics} = require('./controllers/topics.controllers')
-const {getArticleById,getAllArticles} = require('./controllers/articles.controllers')
+const {getArticleById,getAllArticles,postVoteByArticleId} = require('./controllers/articles.controllers')
 const {getCommentsByArticleId,postCommentByArticleId} = require('./controllers/comments.controllers')
 const endpoints = require('./endpoints.json')
 app.use(express.json())
@@ -12,6 +12,8 @@ app.get('/api',(req,res,next)=>{
     res.status(200).send({endpoints})
 })
 app.get('/api/articles/:article_id',getArticleById)
+
+app.patch('/api/articles/:article_id',postVoteByArticleId)
 
 app.get('/api/articles',getAllArticles)
 

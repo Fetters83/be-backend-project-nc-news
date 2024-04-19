@@ -229,3 +229,53 @@ describe('/api/articles/:article_id/comments',()=>{
     
     })
 })
+describe('/api/articles/:article_id',()=>{
+    test('PATCH:200 when request body pass in with a inc_votes value of 1, articles_id total vote count should increase by 1',()=>{
+        const vote = {inc_votes: 1}
+        return request(app)
+        .patch('/api/articles/1')
+        .expect(200)
+        .send(vote)
+        .then(({body:{updatedArticleVoteCount}})=>{
+            expect(updatedArticleVoteCount.article_id).toBe(1)
+            expect(updatedArticleVoteCount.title).toBe('Living in the shadow of a great man')
+            expect(updatedArticleVoteCount.topic).toBe('mitch')
+            expect(updatedArticleVoteCount.author).toBe('butter_bridge')
+            expect(updatedArticleVoteCount.body).toBe('I find this existence challenging')
+            expect(updatedArticleVoteCount.created_at).toBe('2020-07-09T20:11:00.000Z')
+            expect(updatedArticleVoteCount.votes).toBe(101)
+            expect(updatedArticleVoteCount.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700')
+           
+                 })
+    })
+    test('Patch:400 when passed an object with an incorrect data inc_vote data type, an object is returned with a status of 400 and an err message',()=>{
+        const vote = {inc_votes: 'invalid_vote'}
+        return request(app)
+        .patch('/api/articles/1')
+        .expect(400)
+        .send(vote)
+        .then(({body})=>{
+            expect(body.msg).toBe('vote increment must be a number')
+        })
+    })
+    test('Patch:404 when passed a non existent article_id of the correct data type, an object is returned with a status of 404 and an err message',()=>{
+        const vote = {inc_votes: 1}
+        return request(app)
+        .patch('/api/articles/9999')
+        .expect(404)
+        .send(vote)
+        .then(({body})=>{
+            expect(body.msg).toBe('article does not exist')
+        })
+    })
+    test('Patch:400 when passed an article_id of an incorrect data type, an object is returned with a status of 400 and an err message',()=>{
+        const vote = {inc_votes: 1}
+        return request(app)
+        .patch('/api/articles/invalid_id')
+        .expect(400)
+        .send(vote)
+        .then(({body})=>{
+            expect(body.msg).toBe('Bad request')
+        })
+    })
+})
