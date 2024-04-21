@@ -114,13 +114,43 @@
     }
   },
   "GET /api/users":{
-    "description":"Serves as an object detialing all users",
+    "description":"Serves as an object detailing all users",
     "queries":[],
     "exampleResponse":{
       "users":{
         "username":"username A",
         "name": "name A",
         "url": "www.someurl.com/39393"
+      }
+    }
+  },
+  "GET /api/articles/?topic=<query>":{
+    "description":"Serves as an object detailing all articles filtered by the passed topic query",
+    "queries":["topic"],
+    "exampleResponse":{
+      "articles":{
+        "articles": [
+          {
+            "article_id": 34,
+            "title": "The Notorious MSG’s Unlikely Formula For Success",
+            "topic": "cooking",
+            "author": "grumpy19",
+            "created_at": "2020-11-22T00:00:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/2403392/pexels-photo-2403392.jpeg?w=700&h=700",
+            "comment_count": 11
+          },
+          {
+            "article_id": 33,
+            "title": "Seafood substitutions are increasing",
+            "topic": "cooking",
+            "author": "weegembump",
+            "created_at": "2020-09-15T23:00:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?w=700&h=700",
+            "comment_count": 6
+          }
+        ]
       }
     }
   }
