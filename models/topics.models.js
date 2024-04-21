@@ -12,7 +12,14 @@ function fetchAllTopics(){
 }
 
 
+function checkTopicExists(topic){
+      return db.query('SELECT * FROM topics where slug=$1',[topic]).then(({rows:topics})=>{
+            if(topics.length===0){
+            return Promise.reject({status:404,msg:'topic not found'})
+        }
+    })
+  }
+  
 
 
-
-module.exports = {fetchAllTopics}
+module.exports = {fetchAllTopics,checkTopicExists}

@@ -1,4 +1,5 @@
 const {fetchArticleById,fetchAllArticles,getVoteCountByArticleId,updateVoteByArticleId} = require('../models/articles.models')
+const { checkTopicExists } = require('../models/topics.models')
 const { postCommentByArticleId } = require('./comments.controllers')
 
 function getArticleById(req,res,next){
@@ -12,11 +13,23 @@ function getArticleById(req,res,next){
 }
 
 function getAllArticles(req,res,next){
-       fetchAllArticles().then((articles)=>{
-        res.status(200).send({articles})
-    }).catch((err)=>{
-       next(err)
-    })
+      const {topic} = req.query
+       if(topic){
+            Promise.all([fetchAllArticles(topic),checkTopicExists(topic)]).then(([articles])=>{
+            res.status(200).send({articles})
+         }).catch((err)=>{
+            next(err)
+         })
+    } else {
+       
+        fetchAllArticles().then((articles)=>{
+            res.status(200).send({articles})
+         }).catch((err)=>{
+            next(err)
+         })
+    }
+    
+      
 
 
 

@@ -333,4 +333,30 @@ describe('/api/comments/:comment_id',()=>{
             })
         })
     })
-    
+describe('/api/articles/?topic',()=>{
+    test('GET:200 responds with an array of article objects associated with the topic query',()=>{
+        return request(app)
+        .get('/api/articles/?topic=cats')
+        .expect(200)
+        .then(({body:{articles}})=>{
+            expect(articles).toHaveLength(1)
+            expect(articles[0].article_id).toBe(5)
+            expect(articles[0].title).toBe('UNCOVERED: catspiracy to bring down democracy')
+            expect(articles[0].topic).toBe('cats')
+            expect(articles[0].author).toBe('rogersop')
+            expect(articles[0].created_at).toBe('2020-08-02T23:00:00.000Z')
+            expect(articles[0].votes).toBe(0)
+            expect(articles[0].article_img_url).toBe ('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700')
+
+        })
+    })
+    test('GET:404 when an non existent topic is passed as a query a status of 404 is returned with an error message',()=>{
+        return request(app)
+        .get('/api/articles/?topic=invalid_topic')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('topic not found')
+        })
+    })
+}
+)
