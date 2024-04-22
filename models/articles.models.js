@@ -2,7 +2,12 @@ const db = require('../db/connection')
 const format = require('pg-format')
 
 function fetchArticleById(article_id){
-     let queryString = "SELECT * FROM articles WHERE article_id=$1;"
+     let queryString = `SELECT a.* , CAST(COUNT(c.article_id) AS INT) AS "comment_count" 
+     FROM articles AS a
+     LEFT JOIN comments AS c
+     ON a.article_id = c.article_id
+     WHERE a.article_id=$1
+     GROUP BY a.article_id;`
     return db.query(queryString,[article_id]).then(({rows: articles})=>{
 
      if(articles.length === 0){
@@ -34,34 +39,35 @@ function fetchAllArticles(topic){
     })
 }
 
-function getVoteCountByArticleId(article_id){
-    const getVotesQuery = ('SELECT votes FROM articles WHERE article_id=$1;')
+function checkArticleExists(article_id){
     const articleIdRegex = /^\d*$/
-
     if(articleIdRegex.test(article_id) === false){
         return Promise.reject({status:400,msg:'Bad request'})
     }
-
-    return db.query(getVotesQuery,[article_id]).then(({rows:[votes]})=>{
+   
+    const getVotesQuery = ('SELECT * FROM articles WHERE article_id=$1;')
+    return db.query(getVotesQuery,[article_id]).then(({rows:articles})=>{
        
-        if(!votes){
+        if(articles.length === 0){
         return Promise.reject({status:404,msg:'article does not exist'})
        }
 
-        return votes
+        
     })
 }
 
- function updateVoteByArticleId(updateVotes, article_id){
-    const updateVoteQuery = ('UPDATE articles SET votes=$1 WHERE article_id=$2 RETURNING *;')
+ function updateVoteByArticleId(inc_votes,article_id){
   
-    if(typeof updateVotes != 'number'){
+    const updateVoteQuery = ('UPDATE articles SET votes=votes + $1 WHERE article_id=$2 RETURNING *;')
+
+    if(typeof inc_votes != 'number'){
         return Promise.reject({status:400,msg:'vote increment must be a number'})
     }
-    
-    return db.query(updateVoteQuery,[updateVotes,article_id]).then(({rows})=>{
+   
+    return db.query(updateVoteQuery,[inc_votes,article_id]).then(({rows})=>{
             return rows[0]
     })
 } 
 
-module.exports = {fetchArticleById,fetchAllArticles,getVoteCountByArticleId,updateVoteByArticleId}
+
+module.exports = {fetchArticleById,fetchAllArticles,updateVoteByArticleId,checkArticleExists}

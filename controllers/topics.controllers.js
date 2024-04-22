@@ -2,8 +2,8 @@ const {fetchAllTopics,fetchAllEndPoints} = require('../models/topics.models')
 
 
 function getAllTopics(req,res,next){
-    fetchAllTopics().then((body)=>{
-      res.status(200).send(body.rows)
+    fetchAllTopics().then(({rows})=>{
+      res.status(200).send({topics:rows})
     })
 }
 

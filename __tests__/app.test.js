@@ -4,7 +4,7 @@ const seed = require('../db/seeds/seed')
 const data = require('../db/data/test-data/index')
 const express = require('express')
 const app = require('../app')
-const endpoints = require('../endpoints.json')
+const endpointsFile = require('../endpoints.json')
 
 beforeAll(()=>seed(data))
 afterAll(()=>db.end())
@@ -14,10 +14,10 @@ describe('api/topics',()=>{
         return request(app)
         .get('/api/topics')
         .expect(200)
-        .then(({body})=>{
-            expect(body.length).toBe(3)
-            body.forEach((row)=>{
-                expect(row).toEqual(
+        .then(({body:{topics}})=>{
+            expect(topics.length).toBe(3)
+            topics.forEach((topic)=>{
+                expect(topic).toEqual(
                     expect.objectContaining({
                         slug: expect.any(String),
                         description: expect.any(String)
@@ -45,7 +45,7 @@ describe('/api',()=>{
         .get('/api')
         .expect(200)
          .then(({body:{endpoints}})=>{
-          
+          expect(endpoints).toMatchObject(endpointsFile)
           for(let endpoint in endpoints){
             if(endpoint!="GET /api"){
                   expect(endpoints[endpoint]).toEqual(
@@ -83,7 +83,7 @@ describe('api/articles/:article_id',()=>{
             expect(articles).toHaveLength(1)
          })
     })
-    test('GET:404 when artist_id is of a valid data type, but does not exist,obj returned with a error message of article not found',()=>{
+    test('GET:404 when article_id is of a valid data type, but does not exist,obj returned with a error message of article not found',()=>{
         return request(app)
         .get('/api/articles/9999')
         .expect(404)
@@ -100,12 +100,13 @@ describe('api/articles/:article_id',()=>{
         })
     })
 })
-describe('/api/article',()=>{
+describe('/api/articles',()=>{
     test('GET:200 should return an array of article objects with the correct properties',()=>{
         return request(app)
         .get('/api/articles')
         .expect(200)
         .then(({body:{articles}})=>{
+            expect(articles).toHaveLength(13)
             articles.forEach((article)=>{
                 expect(article).toEqual(
                     expect.objectContaining({
@@ -120,6 +121,8 @@ describe('/api/article',()=>{
                     })
                 )
             })
+            expect(articles).toBeSortedBy('created_at',{
+                descending:true,})
         })
     })
 })
@@ -162,6 +165,7 @@ describe('/api/articles/:article_id/comments',()=>{
             expect(body.msg).toBe('Bad request')
         })
     })
+
 })
 describe('/api/articles/:article_id/comments',()=>{
     test('POST:201 when passed an object with a username and body, body text is posted in the comments table to the specified article_id',()=>{
@@ -172,7 +176,7 @@ describe('/api/articles/:article_id/comments',()=>{
         .send(newComment)
         .then(({body})=>{
             expect(body).toEqual({comment:{body:"my first comment"}})
-            expect(typeof body.comment.body).toBe("string")
+            
             
         })
     })
@@ -202,7 +206,7 @@ describe('/api/articles/:article_id/comments',()=>{
         })
     
     })
-    test('POST:400 when a username of an incorrect type is passed, an object is returned with a 404 status and error message',()=>{
+    test('POST:400 when a username of an incorrect type is passed, an object is returned with a 400 status and error message',()=>{
         const newComment = {username:1,body:"my first comment"};
         return request(app)
         .post('/api/articles/1/comments')
@@ -228,25 +232,41 @@ describe('/api/articles/:article_id/comments',()=>{
         })
     
     })
+    test('POST:400 when an article_id of an incorrect data type is passed, an object is returned with a 404 status and error message',()=>{
+        const newComment = {username:"rogersop",body:1};
+        return request(app)
+        .post('/api/articles/invalid_id/comments')
+        .expect(400)
+        .send(newComment)
+        .then(({body})=>{
+            expect(body.msg).toBe("Bad request")
+            
+            
+        })
+    
+    })
 })
 describe('/api/articles/:article_id',()=>{
     test('PATCH:200 when request body pass in with a inc_votes value of 1, articles_id total vote count should increase by 1',()=>{
         const vote = {inc_votes: 1}
+        const expectedObject = {
+            article_id: 1,
+            title: 'Living in the shadow of a great man',
+            topic: 'mitch',
+            author: 'butter_bridge',
+            body: 'I find this existence challenging',
+            created_at: '2020-07-09T20:11:00.000Z',
+            votes: 101,
+            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+        }
         return request(app)
         .patch('/api/articles/1')
         .expect(200)
         .send(vote)
         .then(({body:{updatedArticleVoteCount}})=>{
-            expect(updatedArticleVoteCount.article_id).toBe(1)
-            expect(updatedArticleVoteCount.title).toBe('Living in the shadow of a great man')
-            expect(updatedArticleVoteCount.topic).toBe('mitch')
-            expect(updatedArticleVoteCount.author).toBe('butter_bridge')
-            expect(updatedArticleVoteCount.body).toBe('I find this existence challenging')
-            expect(updatedArticleVoteCount.created_at).toBe('2020-07-09T20:11:00.000Z')
-            expect(updatedArticleVoteCount.votes).toBe(101)
-            expect(updatedArticleVoteCount.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700')
-           
-                 })
+           expect(updatedArticleVoteCount).toMatchObject(expectedObject)
+          
+         })
     })
     test('Patch:400 when passed an object with an incorrect data inc_vote data type, an object is returned with a status of 400 and an err message',()=>{
         const vote = {inc_votes: 'invalid_vote'}
@@ -360,3 +380,21 @@ describe('/api/articles/?topic',()=>{
     })
 }
 )
+describe('/api/articles/:article_id',()=>{
+    test('GET:200 call to articles/:article_id endpoint should now return a comment count in its response object',()=>{
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then(({body:{articles}})=>{
+            expect(articles[0].comment_count).toBe(11)
+            expect(articles[0].article_id).toBe(1)
+            expect(articles[0].title).toBe('Living in the shadow of a great man')
+            expect(articles[0].topic).toBe('mitch')
+            expect(articles[0].author).toBe('butter_bridge')
+            expect(articles[0].body).toBe('I find this existence challenging')
+            expect(articles[0].created_at).toBe('2020-07-09T20:11:00.000Z')
+            expect(articles[0].votes).toBe(101)
+            expect(articles[0].article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700')
+        })
+    })
+})
