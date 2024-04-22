@@ -1,5 +1,11 @@
 # Northcoders News API
 
+***Developement Environment url***
+
+You make api calls using the below URL:
+
+https://be-backend-project-nc-news.onrender.com/
+
 Before using this repo, please follow the below instructions:
 
 1. Add the below files to the root of this project
