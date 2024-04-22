@@ -1,5 +1,5 @@
 const db = require('../db/connection')
-const format = require('pg-format')
+
 
 function fetchArticleById(article_id){
      let queryString = `SELECT a.* , CAST(COUNT(c.article_id) AS INT) AS "comment_count" 
