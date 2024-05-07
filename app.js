@@ -7,6 +7,8 @@ const {getAllUsers} = require('./controllers/users.contoller')
 const endpoints = require('./endpoints.json')
 const {getEndPoints} = require('./controllers/endpoints.controllers')
 app.use(express.json())
+const cors = require('cors');
+app.use(cors());
 
 app.get('/api/topics',getAllTopics)
 
