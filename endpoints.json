@@ -81,7 +81,7 @@
       }
     }
   },
-  "PATCH /api/articles/:article_d ":{
+  "PATCH /api/articles/:article_id ":{
     "description":"Serves as an object returining the article updated a vote increment or dedcution",
     "queries":["article_id", "inc_vote"],
     "exampleResponse":{
@@ -153,5 +153,50 @@
         ]
       }
     }
+  },
+  "GET /api/articles/?sort_by=<query>":{
+    "description":"Serves as an object detailing all articles sorted by the passed sort query",
+    "queries":[ "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "article_img_url"],
+    "exampleResponse":
+      [
+        {
+          "article_id": "13",
+          "title": "Another article about Mitch",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "created_at": "2020-10-10T23:00:00.000Z",
+          "votes": "0",
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": "0"
+        },
+        {
+          "article_id": "12",
+          "title": "Moustache",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "created_at": "2020-10-10T23:00:00.000Z",
+          "votes": "0",
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": "0"
+        },
+        {
+          "article_id": "11",
+          "title": "Am I a cat?",
+          "topic": "mitch",
+          "author": "icellusedkars",
+          "created_at": "2020-01-15T00:00:00.000Z",
+          "votes": "0",
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": 0
+        }
+      ]
+    }
   }
-}
+  
