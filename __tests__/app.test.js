@@ -356,7 +356,7 @@ describe('/api/comments/:comment_id',()=>{
 describe('/api/articles/?topic',()=>{
     test('GET:200 responds with an array of article objects associated with the topic query',()=>{
         return request(app)
-        .get('/api/articles/?topic=cats')
+        .get('/api/articles?topic=cats')
         .expect(200)
         .then(({body:{articles}})=>{
             expect(articles).toHaveLength(1)
@@ -397,4 +397,43 @@ describe('/api/articles/:article_id',()=>{
             expect(articles[0].article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700')
         })
     })
+})
+describe('/api/articles?topic=topic&sort_by=sort_by&order=order',()=>{
+    test('GET 200: Accepts a sort query and responds with articles ordered by the column name',()=>{
+        return request(app)
+        .get('/api/articles?topic=mitch&sort_by=article_id&order=ASC')
+        .expect(200)
+        .then(({body:{articles}})=>{
+          expect(articles).toBeSortedBy('article_id')
+        })
+    })
+    test('GET 400: when invalid sort_by is called a 400 bad request is returned with err msg ',()=>{
+        return request(app)
+        .get('/api/articles?topic=mitch&sort_by=INVALID_SORTBY&order=ASC')
+        .expect(400)
+        .then(({body})=>{      
+            expect(body.msg).toBe('invalid sort query')
+        })
+    })
+    test('GET 400: when invalid order is called a 400 bad request is returned with err msg',()=>{
+        return request(app)
+        .get('/api/articles?topic=mitch&sort_by=votes&order=INVALID')
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe('invalid order query')
+        })
+    })
+ 
+})
+describe('/api/articles?sort_by=sort_by',()=>{
+    test('GET 200: Accepts a single sort query and responds with articles ordered by the column name in descending order',()=>{
+        return request(app)
+        .get('/api/articles?sort_by=article_id')
+        .expect(200)
+        .then(({body:{articles}})=>{
+          expect(articles).toBeSortedBy('article_id',{descending:true})
+        })
+    })
+
+ 
 })
