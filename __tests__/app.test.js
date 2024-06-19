@@ -437,3 +437,13 @@ describe('/api/articles?sort_by=sort_by',()=>{
 
  
 })
+/* describe('/',()=>{
+    test('GET 200: Base URL returns a message to navigate to /api for further enpoint infotmation',()=>{
+        return request(app)
+        .get('/')
+        .expect(200)
+        .then((respsonse)=>{
+            expect(respsonse).toBe('Welcome to NC News - please navigate to https://be-backend-project-nc-news.onrender.com/api to see list of end points')
+        })
+    })
+}) */
