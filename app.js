@@ -1,34 +1,17 @@
 const express = require('express')
 const app = express()
-const {getAllTopics} = require('./controllers/topics.controllers')
-const {getArticleById,getAllArticles,postVoteByArticleId} = require('./controllers/articles.controllers')
-const {getCommentsByArticleId,postCommentByArticleId,removeCommentById} = require('./controllers/comments.controllers')
-const {getAllUsers} = require('./controllers/users.contoller')
-const endpoints = require('./endpoints.json')
-const {getEndPoints} = require('./controllers/endpoints.controllers')
 app.use(express.json())
 const cors = require('cors');
 app.use(cors());
+const apiRouter = require('./routes/api-router')
 
-app.get('/api/topics',getAllTopics)
 
-app.get('/api',getEndPoints)
-  
-
-app.get('/api/articles/:article_id',getArticleById)
-
-app.patch('/api/articles/:article_id',postVoteByArticleId)
-
-app.get('/api/articles',getAllArticles)
-
-app.get('/api/articles/:article_id/comments',getCommentsByArticleId)
-
-app.post('/api/articles/:article_id/comments',postCommentByArticleId)
-
-app.delete('/api/comments/:comment_id',removeCommentById)
-
-app.get('/api/users',getAllUsers)
-
+  app.get('/',(req,res,next)=>{
+    res.status(200).send('Welcome to NC News - please navigate to https://be-backend-project-nc-news.onrender.com/api to see list of end points')
+}) 
+ 
+//All routes begining with /api
+ app.use('/api', apiRouter);
 
 
 //Error handling middleware
