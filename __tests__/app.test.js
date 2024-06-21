@@ -437,13 +437,38 @@ describe('/api/articles?sort_by=sort_by',()=>{
 
  
 })
-/* describe('/',()=>{
+ describe('/',()=>{
     test('GET 200: Base URL returns a message to navigate to /api for further enpoint infotmation',()=>{
         return request(app)
         .get('/')
         .expect(200)
-        .then((respsonse)=>{
-            expect(respsonse).toBe('Welcome to NC News - please navigate to https://be-backend-project-nc-news.onrender.com/api to see list of end points')
+        .then((response)=>{
+            expect(response.text).toBe('Welcome to NC News - please navigate to https://be-backend-project-nc-news.onrender.com/api to see list of end points')
         })
     })
-}) */
+}) 
+describe('/api/users/:username', ()=>{
+    test('GET 200: returns an object of the user by the given username',()=>{
+        return request(app)
+        .get('/api/users/icellusedkars')
+        .expect(200)
+        .then(({body})=>{
+                expect(body).toEqual(
+                    expect.objectContaining({
+                        username: expect.any(String),
+                        name:expect.any(String),
+                        avatar_url:expect.any(String)
+                    })
+                )
+        
+            })
+        })
+        test('GET 404: when passed a non existent username, server responds with status 404 and an error message', ()=>{
+            return request(app)
+            .get('/api/users/notauser')
+            .expect(404)
+            .then(({body})=>{
+                expect(body.msg).toBe('user not found')
+            })
+        })
+    })
