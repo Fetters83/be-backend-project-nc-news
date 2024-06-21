@@ -197,6 +197,18 @@
           "comment_count": 0
         }
       ]
+    },
+    "GET /api/users/:username":{
+    "description":"Serves as an object detailing a user depenedant on the username passed",
+    "queries":[ "username"],
+    "exampleResponse":
+      
+        {
+          "username": "myusername",
+          "avatar_url": "https://www.site.com/content/uploads/2016/01/picture.jpg",
+          "name": "bill"
+        }
+      
     }
   }
   
