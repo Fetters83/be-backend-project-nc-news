@@ -74,7 +74,8 @@
   },
   "POST /api/articles/:article_id/comments":{
     "description":"Serves as an object representing a posted comment on an aricle defined by the passed article_id",
-    "queries":["body","article_id","author"],
+    "queries":["article_id"],
+    "examplePayload":{"username":"username","body":"my first comment"},
     "exampleResponse":{
       "comment":
       {"body":"This article turned out to be very information"
@@ -83,7 +84,8 @@
   },
   "PATCH /api/articles/:article_id ":{
     "description":"Serves as an object returining the article updated a vote increment or dedcution",
-    "queries":["article_id", "inc_vote"],
+    "queries":["article_id"],
+    "examplePayload":{"inc_votes":"1"},
     "exampleResponse":{
       "updatedArticleVoteCount":
       {
@@ -209,6 +211,14 @@
           "name": "bill"
         }
       
+    },
+    "PATCH /api/comments/:comment_id":{
+      "description":"Serves as an object detailing the comment and new vote count of a comment voted on",
+      "queries":["comment_id"],
+      "examplePayload":{"inc_votes":"1"},
+      "exampleResponse":
+      {"body":"This is an example comment","votes":"4"}
+
     }
   }
   

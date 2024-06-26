@@ -1,9 +1,8 @@
-const {fetchCommentsByArticleId,insertCommentByArticleId,deleteCommentById} = require('../models/comments.models')
+const {fetchCommentsByArticleId,insertCommentByArticleId,deleteCommentById, updateCommentVoteByCommentId, checkCommentExists} = require('../models/comments.models')
 
 
 function getCommentsByArticleId(req,res,next){
     const {article_id} = req.params
-
 
     fetchCommentsByArticleId(article_id).then((comments)=>{
        res.status(200).send({comments})
@@ -35,4 +34,17 @@ function removeCommentById(req,res,next){
 
 }
 
-module.exports = {getCommentsByArticleId,postCommentByArticleId,removeCommentById}
+function postVoteByCommentId(req,res,next){
+    const {comment_id} = req.params
+    const {inc_votes} = req.body
+   
+    Promise.all([updateCommentVoteByCommentId(inc_votes,Number(comment_id)),checkCommentExists(comment_id)]).then((result)=>{
+        res.status(201).send({updatedCommentVoteCount:result[0]})
+    }).catch((err)=>{
+       
+        next(err)
+    })
+      
+}
+
+module.exports = {getCommentsByArticleId,postCommentByArticleId,removeCommentById,postVoteByCommentId}

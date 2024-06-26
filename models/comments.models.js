@@ -1,3 +1,4 @@
+const { json } = require('express');
 const db = require('../db/connection')
 const format = require('pg-format');
 
@@ -47,4 +48,27 @@ function deleteCommentById(comment_id){
 
 }
 
-module.exports = {fetchCommentsByArticleId,insertCommentByArticleId,deleteCommentById}
+function updateCommentVoteByCommentId(inc_votes,comment_id){
+    const incVoteStr = `UPDATE comments SET votes=votes + $1 WHERE comment_id = $2 RETURNING body,votes;`
+    if(!typeof inc_votes  === 'number'){
+        return Promise.reject({status:400,msg:'Bad request'})
+    }
+    return db.query(incVoteStr,[inc_votes,comment_id]).then((/* {rows} */{rows})=>{
+        //console.log(rows[0])
+        return rows[0]
+    })
+}
+
+function checkCommentExists(comment_id){
+    const getCommentQuery = `SELECT comment_id FROM comments WHERE comment_id = $1;`
+    return db.query(getCommentQuery,[comment_id]).then(({rows})=>{
+          if(rows.length === 0) {
+           return Promise.reject({status:404,msg:'comment not found'})
+        }
+        Promise.resolve(true)
+       
+    })
+
+}
+
+module.exports = {fetchCommentsByArticleId,insertCommentByArticleId,deleteCommentById,updateCommentVoteByCommentId,checkCommentExists}

@@ -472,3 +472,72 @@ describe('/api/users/:username', ()=>{
             })
         })
     })
+    describe('/api/comments:comment_id',()=>{
+        test('GET 200: object with updated votes count returns an object containing comment with updated vote count',()=>{
+            const vote = {inc_votes:1}
+            return request(app)
+            .patch('/api/comments/1')
+            .expect(201)
+            .send(vote)
+            .then(({body})=>{
+                 expect(body).toEqual(
+                    expect.objectContaining({updatedCommentVoteCount:{
+                        body:expect.any(String),
+                        votes:expect.any(Number)
+                    }})
+                ) 
+            })
+        })
+        test('GET 200: votes count for comment_id should increase by 1',()=>{
+            const vote = {inc_votes:1}
+            const currentVoteCount = 17
+            return request(app)
+            .patch('/api/comments/1')
+            .expect(201)
+            .send(vote)
+            .then(({body})=>{
+                expect(body.updatedCommentVoteCount.votes).toBe(currentVoteCount + 1)
+            })
+        })
+        test('GET 200: votes count for comment_id should decrease by 1',()=>{
+            const vote = {inc_votes:-1}
+            const currentVoteCount = 18
+            return request(app)
+            .patch('/api/comments/1')
+            .expect(201)
+            .send(vote)
+            .then(({body})=>{
+                expect(body.updatedCommentVoteCount.votes).toBe(currentVoteCount - 1)
+            })
+        })
+        test('GET 400: vote increment object containing an invalid data type and returns a status of 404 and an error message',()=>{
+            const vote = {inc_votes:'invalid'}
+            return request(app)
+            .patch('/api/comments/1')
+            .expect(400)
+            .send(vote)
+            .then(({body})=>{
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+        test('GET 404: when comment id is of a valid data type but does not exist a status of 404 is returned with an error message',()=>{
+            const vote = {inc_votes: 1}
+            return request(app)
+            .patch('/api/comments/9999')
+            .expect(404)
+            .send(vote)
+            .then(({body})=>{
+                expect(body.msg).toBe('comment not found')
+            })
+        })
+        test('GET 400: when comment id is of an invalid data type a status of 400 is returned with an error message',()=>{
+            const vote = {inc_votes:1}
+            return request(app)
+            .patch('/api/comments/invalid')
+            .expect(400)
+            .send(vote)
+            .then(({body})=>{
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+    })
