@@ -3,8 +3,10 @@ const {
   fetchAllArticles,
   updateVoteByArticleId,
   checkArticleExists,
+  insertNewArticle,
 } = require("../models/articles.models");
 const { checkTopicExists } = require("../models/topics.models");
+const { fetchUserByUserName } = require("../models/users.models");
 
 function getArticleById(req, res, next) {
   const { article_id } = req.params;
@@ -57,4 +59,22 @@ function postVoteByArticleId(req, res, next) {
     });
 }
 
-module.exports = { getArticleById, getAllArticles, postVoteByArticleId };
+function postNewArticle(req,res,next){
+  const newArticle = req.body
+  const {author} = req.body
+  const {topic} = req.body
+
+
+  Promise.all([insertNewArticle(newArticle),fetchUserByUserName(author),checkTopicExists(topic)]).then((newArticleId)=>{
+    return fetchArticleById(newArticleId[0])
+  }).then((result)=>{
+    const newArticleResult = result[0]
+    res.status(201).send({ArticlePosted:newArticleResult})
+  }).catch((err)=>{
+     next(err)
+  })
+
+
+}
+
+module.exports = { getArticleById, getAllArticles, postVoteByArticleId,postNewArticle };
