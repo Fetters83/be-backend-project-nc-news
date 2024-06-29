@@ -11,7 +11,7 @@ function checkTopicExists(topic) {
     .query("SELECT * FROM topics where slug=$1", [topic])
     .then(({ rows: topics }) => {
       if (topics.length === 0) {
-        return Promise.reject({ status: 404, msg: "topic not found" });
+       return Promise.reject({ status: 404, msg: "topic not found" });
       }
     });
 }

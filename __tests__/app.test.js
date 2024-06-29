@@ -541,3 +541,112 @@ describe('/api/users/:username', ()=>{
             })
         })
     })
+    describe('/api/articles',()=>{
+        test('POST 201: when sent an object with all required key value pairs a new article is posted with a status of 201 and returned objetc detailing the posting',()=>{
+            const newArticle={author:'rogersop',
+                title:"my first article",
+                body:"This is the first article body",
+                topic:"cats",article_img_url:"https://images.pexels.com/photos/5849591/pexels-photo-5849591.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            }
+            return request(app)
+            .post('/api/articles')
+            .expect(201)
+            .send(newArticle)
+            .then(({body})=>{
+                    expect(body).toEqual(
+                    expect.objectContaining({ArticlePosted:{
+                        article_id:expect.any(Number),
+                        title:expect.any(String),
+                        topic:expect.any(String),
+                        author:expect.any(String),
+                        body:expect.any(String),
+                        created_at:expect.any(String),
+                        votes:expect.any(Number),
+                        article_img_url:expect.any(String),
+                        comment_count:expect.any(Number)
+                    }
+                        
+                    })
+                )
+            })
+            
+        })
+        test('POST 201: When sent an object with all required key value pairs a new object is returned with the exact values of the article row posted',()=>{
+            const newArticle={author:'rogersop',
+                title:"my second article",
+                body:"This is the second article body",
+                topic:"cats",article_img_url:"https://images.pexels.com/photos/5849591/pexels-photo-5849591.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            }
+            return request(app)
+            .post('/api/articles')
+            .expect(201)
+            .send(newArticle)
+            .then(({body})=>{
+                expect(body.ArticlePosted.article_id).toBe(15)
+                expect(body.ArticlePosted.title).toBe('my second article')
+                expect(body.ArticlePosted.topic).toBe('cats')
+                expect(body.ArticlePosted.author).toBe('rogersop')
+                expect(body.ArticlePosted.body).toBe('This is the second article body')
+                expect(body.ArticlePosted.votes).toBe(0)
+                expect(body.ArticlePosted.article_img_url).toBe('https://images.pexels.com/photos/5849591/pexels-photo-5849591.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')
+                expect(body.ArticlePosted.comment_count).toBe(0)                
+            })
+
+        })
+        test('POST 400: When new article object does not contain an aritcle_img_url a default url is inserted into the database',()=>{
+            const newArticle={author:'rogersop',
+                title:"my third article",
+                body:"This is the third article body",
+                topic:"cats"
+            }
+            return request(app)
+            .post('/api/articles')
+            .expect(201)
+            .send(newArticle)
+            .then(({body})=>{
+                expect(body.ArticlePosted.article_img_url).toBe('https://images.pexels.com/photos/4206796/pexels-photo-4206796.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')
+            })
+        })
+        test('POST 400: When new article object is missing any of the required key value pairs a status of 400 is returned along with an error message',()=>{
+            const newArticle={
+                title:"my fourth article",
+                body:"my fourth article body",
+                topic:"cats"
+            }
+            return request(app)
+            .post('/api/articles')
+            .expect(400)
+            .send(newArticle)
+            .then(({body})=>{
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+        test('POST 404: When new article object references an author that does not exist a status of 404 should be returned with an error message',()=>{
+            const newArticle={author:"invalid",
+                title:"my fourth article",
+                body:"my fourth article body",
+                topic:"cats"
+            }
+            return request(app)
+            .post('/api/articles')
+            .expect(404)
+            .send(newArticle)
+            .then(({body})=>{
+                expect(body.msg).toBe('user not found')
+            })
+        })
+        test('POST 404: When new article object references a topic that does not exist a status of 404 should be returned with an error message',()=>{
+            const newArticle={author:"rogersop",
+                title:"my fourth article",
+                body:"my fourth article body",
+                topic:"dogs"
+            }
+            return request(app)
+            .post('/api/articles')
+            .expect(404)
+            .send(newArticle)
+            .then(({body})=>{
+              expect(body.msg).toBe('this topic does not exist')
+            })
+        })
+    })

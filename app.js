@@ -33,11 +33,18 @@ app.use((err,req,res,next)=>{
 })
 
 app.use((err,req,res,next)=>{
+
     if(err.code === "23503" && err.constraint === "comments_article_id_fkey"){
      res.status(404).send({status:404, msg:"this article does not exist"})   
     }
     if(err.code === "23503" && err.constraint === "comments_author_fkey"){
         res.status(404).send({status:404,msg:"you are not yet a valid user"})
+    }
+    if(err.code === "23503" && err.constraint === "articles_author_fkey"){
+        res.status(404).send({status:404,msg:err.msg})
+    }
+    if(err.code === "23503" && err.constraint === "articles_topic_fkey"){
+        res.status(404).send({status:404,msg:"this topic does not exist"})
     }
     next(err)
 })
