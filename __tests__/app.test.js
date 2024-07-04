@@ -650,3 +650,74 @@ describe('/api/users/:username', ()=>{
             })
         })
     })
+    describe('/api/articles?,p=<>',()=>{
+        test('GET 200: when request body only has a p parameter  and no limit a default number of 10 records should be returned',()=>{
+            return request(app)
+            .get('/api/articles?p=1')
+            .expect(200)
+            .then(({body:{articles}})=>{
+                //console.log(articles)
+                expect(articles).toHaveLength(10)
+            })
+        })
+        test('GET 200: when default number of records of 10 is set, setting the page query to 2 should return only 6 records from the test DB',()=>{
+            return request(app)
+            .get('/api/articles?p=2')
+            .expect(200)
+            .then(({body:{articles}})=>{
+                expect(articles).toHaveLength(6)
+            })
+        })
+         test('GET 400: when the p query is not a valid data type a status of 400 and an error message is returned',()=>{
+            return request(app)
+            .get('/api/articles?p=invalid')
+            .expect(400)
+            .then(({body})=>{
+                expect(body.msg).toBe('Pagination option must be of type number')
+            })
+         })
+    })
+    describe('/api/articles?limit=<limit>,p=<p>',()=>{
+        test('GET 200: When a limit of 5 and a pagination query of 5 is sent in the query, 1 article out of 16 should be returned',()=>{
+            return request(app)
+            .get('/api/articles?limit=5&p=4')
+            .expect(200)
+            .then(({body:{articles}})=>{
+                expect(articles).toHaveLength(1)
+            })
+        })
+        test('GET 400: When limit is of the wrong data type a status of 400 and an error message is returned',()=>{
+            return request(app)
+            .get('/api/articles?limit=invalid&p=4')
+            .expect(400)
+            .then(({body})=>{
+                expect(body.msg).toBe('Limit option must be of type number')
+            })
+        })
+    })
+        describe('/api/articles?<topic>&p=<>',()=>{
+            test('GET 200: when topic and pagination are sent in query, total count of 12 and object of 2 articles should be returned',()=>{
+            return request(app)
+            .get('/api/articles?topic=mitch&p=2')
+            .expect(200)
+            .then(({body})=>{
+                expect(body.total_count).toBe(12)
+                expect(body.articles).toHaveLength(2)
+            })
+        })
+            test('GET 400: when page is out of range and no results are returned a status of 400 is returned with a message',()=>{
+                return request(app)
+                .get('/api/articles?topic=mitch&p=3')
+                .expect(400)
+                .then(({body})=>{
+                    expect(body.msg).toBe('Page out of range')
+                  
+                })
+            })
+    })
+                       
+                    
+            
+
+ 
+    
