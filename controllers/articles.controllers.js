@@ -15,30 +15,56 @@ function getArticleById(req, res, next) {
       res.status(200).send({ articles });
     })
     .catch((err) => {
+     
       next(err);
     });
 }
 
 function getAllArticles(req, res, next) {
-  const { topic, sort_by, order } = req.query;
+  const { topic, sort_by, order,limit,p} = req.query;
+
+  
+  
+ 
 
   if (!topic) {
-    fetchAllArticles(topic, sort_by, order)
+ 
+    fetchAllArticles(topic, sort_by, order, limit,p)
       .then((articles) => {
-        res.status(200).send({ articles });
+        if(limit || p) {
+          const total_count = Number(articles[0].full_count)
+
+          for(article of articles){
+           delete article.full_count
+          }
+      
+         
+          res.status(200).send({total_count:total_count,articles:articles});
+        }
+       res.status(200).send({ articles });
       })
       .catch((err) => {
+     
         next(err);
       });
   }
   Promise.all([
-    fetchAllArticles(topic, sort_by, order),
+    fetchAllArticles(topic, sort_by, order, limit,p),
     checkTopicExists(topic),
   ])
     .then(([articles]) => {
+   
+      if(limit || p) {
+        const total_count = Number(articles[0].full_count)
+        for(article of articles){
+         delete article.full_count
+        }
+        res.status(200).send({total_count:total_count,articles:articles});
+      }
       res.status(200).send({ articles });
     })
     .catch((err) => {
+      
       next(err);
     });
 }
@@ -71,7 +97,7 @@ function postNewArticle(req,res,next){
     const newArticleResult = result[0]
     res.status(201).send({ArticlePosted:newArticleResult})
   }).catch((err)=>{
-     next(err)
+      next(err)
   })
 
 

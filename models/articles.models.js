@@ -17,7 +17,7 @@ function fetchArticleById(article_id) {
   });
 }
 
-function fetchAllArticles(topic, sort_by, order) {
+function fetchAllArticles(topic, sort_by, order, limit, p) {
   let queryVals = [];
   let validSortBys = [
     "article_id",
@@ -30,10 +30,31 @@ function fetchAllArticles(topic, sort_by, order) {
     "article_img_url",
   ];
 
+  if (!limit) {
+    limit = 10;
+  }
+
   let validOrderBys = ["ASC", "DESC"];
 
-  let queryString = `SELECT a.article_id,a.title,a.topic,a.author, CAST(a.created_at AS DATE),a.votes,a.article_img_url,CAST(COUNT(c.article_id)AS INT) AS "comment_count"
-    FROM articles AS a 
+  let queryString = `SELECT a.article_id,a.title,a.topic,a.author, CAST(a.created_at AS DATE),a.votes,a.article_img_url,CAST(COUNT(c.article_id)AS INT) AS "comment_count" `;
+
+  if (p) {
+    if (isNaN(Number(p))) {
+      return Promise.reject({
+        status: 400,
+        msg: "Pagination option must be of type number",
+      });
+    }
+    if (isNaN(Number(limit))) {
+      return Promise.reject({
+        status: 400,
+        msg: "Limit option must be of type number",
+      });
+    }
+    queryString += `,COUNT(*) OVER() AS "full_count" `;
+  }
+
+  queryString += `FROM articles AS a 
     LEFT JOIN comments AS c
     ON a.article_id = c.article_id `;
 
@@ -64,9 +85,17 @@ function fetchAllArticles(topic, sort_by, order) {
   if (order) {
     queryString += `${order}`;
   } else {
-    queryString += `DESC`;
+    queryString += `DESC `;
   }
+
+  if (p) {
+    queryString += `LIMIT ${limit} OFFSET ${limit} * ${p - 1};`;
+  }
+
   return db.query(queryString, queryVals).then(({ rows }) => {
+    if(rows.length === 0){
+      return Promise.reject({status:400,msg:'Page out of range'})
+    }
     return rows;
   });
 }
@@ -101,24 +130,34 @@ function updateVoteByArticleId(inc_votes, article_id) {
   });
 }
 
-function insertNewArticle(newArticle){
-  const {author,title,body,topic} = newArticle
-//const topicRegex = regex.test(topic)
- //console.log(topicRegex)
+function insertNewArticle(newArticle) {
+  const { author, title, body, topic } = newArticle;
 
-  const {article_img_url= 'https://images.pexels.com/photos/4206796/pexels-photo-4206796.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'} = newArticle || {}
-  const regex = /[a-zA-Z0-9_]+/i
- 
-const newArticleObjIsInValid = (!author || !regex.test(author)) || (!title || !regex.test(title)) || (!body|| !regex.test(body)) || (!topic || !regex.test(topic))
+  const {
+    article_img_url = "https://images.pexels.com/photos/4206796/pexels-photo-4206796.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  } = newArticle || {};
+  const regex = /[a-zA-Z0-9_]+/i;
 
-  if((newArticleObjIsInValid)){
-     return Promise.reject({status:400,msg:'Bad request'})
+  const newArticleObjIsInValid =
+    !author ||
+    !regex.test(author) ||
+    !title ||
+    !regex.test(title) ||
+    !body ||
+    !regex.test(body) ||
+    !topic ||
+    !regex.test(topic);
+
+  if (newArticleObjIsInValid) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
-  const insertNewArticleQuery = `INSERT into articles (title,topic,author,body,article_img_url) VALUES ($1,$2,$3,$4,$5) RETURNING article_id;`
-  return db.query(insertNewArticleQuery,[title,topic,author,body,article_img_url]).then(({rows})=>{
-     return rows[0].article_id
-  })
+  const insertNewArticleQuery = `INSERT into articles (title,topic,author,body,article_img_url) VALUES ($1,$2,$3,$4,$5) RETURNING article_id;`;
+  return db
+    .query(insertNewArticleQuery, [title, topic, author, body, article_img_url])
+    .then(({ rows }) => {
+      return rows[0].article_id;
+    });
 }
 
 module.exports = {
@@ -126,5 +165,5 @@ module.exports = {
   fetchAllArticles,
   updateVoteByArticleId,
   checkArticleExists,
-  insertNewArticle
+  insertNewArticle,
 };
