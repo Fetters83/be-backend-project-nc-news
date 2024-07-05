@@ -28,7 +28,6 @@ function getAllArticles(req, res, next) {
  
 
   if (!topic) {
- 
     fetchAllArticles(topic, sort_by, order, limit,p)
       .then((articles) => {
         if(limit || p) {

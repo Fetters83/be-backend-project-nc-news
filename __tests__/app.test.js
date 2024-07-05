@@ -715,6 +715,59 @@ describe('/api/users/:username', ()=>{
                 })
             })
     })
+    describe('/api/articles/:article:id/comments?p=<p>',()=>{
+        test('GET 200: when request body only has a p parameter and no limit a default number of 10 records should be returned',()=>{
+            return request(app)
+            .get('/api/articles/1/comments?p=1')
+            .expect(200)
+            .then(({body:{comments}})=>{
+                expect(comments).toHaveLength(10)
+            })
+        })
+        test('GET 200: when default number of records of 10 is set, setting the page query to 2 should return only 6 records from the test DB',()=>{
+            return request(app)
+            .get('/api/articles/1/comments?p=2')
+            .expect(200)
+            .then(({body:{comments}})=>{
+                expect(comments).toHaveLength(1)
+            })
+        })
+        test('GET 400: when the p query is not a valid data type a status of 400 and an error message is returned',()=>{
+            return request(app)
+            .get('/api/articles/1/comments?p=invalid')
+            .expect(400)
+            .then(({body})=>{
+                expect(body.msg).toBe('Pagination option must be of type number')
+            })
+         })
+         test('GET 400: when page is out of range and no results are returned a status of 400 is returned with a message',()=>{
+            return request(app)
+            .get('/api/articles/1/comments?p=3')
+            .expect(400)
+            .then(({body})=>{
+                expect(body.msg).toBe('Page out of range')
+              
+            })
+        })
+    })
+    describe('/api/articles?limit=<limit>,p=<p>',()=>{
+        test('GET 200: When a limit of 5 and a pagination query of 3 is sent in the query, 1 article out of 11 should be returned',()=>{
+            return request(app)
+            .get('/api/articles/1/comments?limit=5&p=3')
+            .expect(200)
+            .then(({body:{comments}})=>{
+                expect(comments).toHaveLength(1)
+            })
+        })
+        test('GET 400: When limit is of the wrong data type a status of 400 and an error message is returned',()=>{
+            return request(app)
+            .get('/api/articles/1/comments?limit=invalid&p=1')
+            .expect(400)
+            .then(({body})=>{
+                expect(body.msg).toBe('Limit option must be of type number')
+            })
+        })
+    })
                        
                     
             

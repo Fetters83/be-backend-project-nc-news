@@ -3,8 +3,15 @@ const {fetchCommentsByArticleId,insertCommentByArticleId,deleteCommentById, upda
 
 function getCommentsByArticleId(req,res,next){
     const {article_id} = req.params
+    const {limit,p} = req.query
+    
 
-    fetchCommentsByArticleId(article_id).then((comments)=>{
+    fetchCommentsByArticleId(article_id,limit,p).then((comments)=>{
+      /*  if(p){
+        if(comments.lenght===0){
+            res.status(400).send({status:400,msg:'Page out of range'})
+        }
+       } */
        res.status(200).send({comments})
     }).catch((err)=>{
         next(err)

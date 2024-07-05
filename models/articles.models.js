@@ -30,30 +30,30 @@ function fetchAllArticles(topic, sort_by, order, limit, p) {
     "article_img_url",
   ];
 
-  if (!limit) {
-    limit = 10;
-  }
 
   let validOrderBys = ["ASC", "DESC"];
 
   let queryString = `SELECT a.article_id,a.title,a.topic,a.author, CAST(a.created_at AS DATE),a.votes,a.article_img_url,CAST(COUNT(c.article_id)AS INT) AS "comment_count" `;
 
-  if (p) {
+  if (p) { 
     if (isNaN(Number(p))) {
       return Promise.reject({
         status: 400,
         msg: "Pagination option must be of type number",
       });
     }
+   
+    queryString += `,COUNT(*) OVER() AS "full_count" `;
+  }
+
+  if(limit){
     if (isNaN(Number(limit))) {
       return Promise.reject({
         status: 400,
         msg: "Limit option must be of type number",
       });
     }
-    queryString += `,COUNT(*) OVER() AS "full_count" `;
   }
-
   queryString += `FROM articles AS a 
     LEFT JOIN comments AS c
     ON a.article_id = c.article_id `;
@@ -89,7 +89,12 @@ function fetchAllArticles(topic, sort_by, order, limit, p) {
   }
 
   if (p) {
-    queryString += `LIMIT ${limit} OFFSET ${limit} * ${p - 1};`;
+    if(limit){
+      queryString += `LIMIT ${limit} OFFSET ${limit} * ${p - 1};`;
+    } else {
+      queryString += `LIMIT 10 OFFSET 10 * ${p - 1};`;
+    }
+    
   }
 
   return db.query(queryString, queryVals).then(({ rows }) => {
