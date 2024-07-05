@@ -2,15 +2,55 @@ const { json } = require('express');
 const db = require('../db/connection')
 const format = require('pg-format');
 
-function fetchCommentsByArticleId(article_id){
-    const queryString = `SELECT c.comment_id,c.votes,c.created_at,c.author,c.body,c.article_id 
+function fetchCommentsByArticleId(article_id,limit,p){
+ 
+    let queryString = `SELECT c.comment_id,c.votes,c.created_at,c.author,c.body,c.article_id 
     FROM comments AS c
     LEFT JOIN articles AS a
     ON c.article_id = a.article_id
     WHERE a.article_id=$1
-    ORDER BY c.created_at DESC;`
+    ORDER BY c.created_at DESC`
+
+    if(p){
+        if (isNaN(Number(p))) {
+            return Promise.reject({
+              status: 400,
+              msg: "Pagination option must be of type number",
+            });
+          }
+          
+    }
+
+    if(limit){
+        if (isNaN(Number(limit))) {
+            return Promise.reject({
+              status: 400,
+              msg: "Limit option must be of type number",
+            });
+          }
+
+    }
+ 
+
+
+    if(p){
+        if(limit){
+            queryString += ` LIMIT ${limit} OFFSET ${limit} * ${p - 1};` 
+        }else if(!limit){
+            queryString += ` LIMIT 10 OFFSET 10 * ${p - 1};` 
+        }
+        
+    }else{
+        queryString += `;`
+    }    
+   
+   
     return db.query(queryString,[article_id]).then(({rows})=>{
+        
          if(rows.length === 0){
+            if(p){
+                return Promise.reject({status:400,msg:'Page out of range'})
+            }
             return Promise.reject({status:404,msg:'no comments found'})
         } 
         return rows
