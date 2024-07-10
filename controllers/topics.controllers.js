@@ -1,4 +1,4 @@
-const {fetchAllTopics,fetchAllEndPoints} = require('../models/topics.models')
+const {fetchAllTopics,fetchAllEndPoints, insertTopic} = require('../models/topics.models')
 
 
 function getAllTopics(req,res,next){
@@ -7,9 +7,19 @@ function getAllTopics(req,res,next){
     })
 }
 
+function postTopic(req,res,next){
+    const{slug} = req.body
+    const{description} = req.body   
+     insertTopic(slug,description).then((topic)=>{
+      res.status(201).send({newTopic:topic})
+     }).catch((err)=>{
+        next(err)
+     }) 
+}
 
 
 
 
 
-module.exports = {getAllTopics}
+
+module.exports = {getAllTopics,postTopic}

@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const format = require("pg-format")
 const endpoints = require("../endpoints.json");
 
 function fetchAllTopics() {
@@ -16,4 +17,33 @@ function checkTopicExists(topic) {
     });
 }
 
-module.exports = { fetchAllTopics, checkTopicExists };
+function insertTopic(slug,description){
+  const regex = /[a-zA-Z0-9_]+/i;
+  if(slug) {
+    if(typeof slug != 'string' ){
+      return Promise.reject({status:400,msg:'slug must be of type string'})
+    }
+    if(!regex.test(slug)){
+      return Promise.reject({status:400,msg:"slug must contain alpha numeric characters"})
+    }
+  }
+  if(description) {
+    if(typeof description != 'string' ){
+      return Promise.reject({status:400,msg:'description must be of type string'})
+    }
+    if(!regex.test(description)){
+      return Promise.reject({status:400,msg:"description must contain alpha numeric characters"})
+    }
+  }
+  if(!slug){
+    return Promise.reject({status:400,msg:"slug must be provided"})
+  }
+  if(!description){
+    return Promise.reject({status:400,msg:"description must be provided"})
+  }
+  const queryString = format(`INSERT INTO topics (slug,description) VALUES (%L) RETURNING *;`,[slug,description]) 
+  return db.query(queryString).then(({rows})=>{
+     return rows[0]
+  })
+}
+module.exports = { fetchAllTopics, checkTopicExists, insertTopic };

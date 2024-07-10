@@ -656,7 +656,6 @@ describe('/api/users/:username', ()=>{
             .get('/api/articles?p=1')
             .expect(200)
             .then(({body:{articles}})=>{
-                //console.log(articles)
                 expect(articles).toHaveLength(10)
             })
         })
@@ -765,6 +764,88 @@ describe('/api/users/:username', ()=>{
             .expect(400)
             .then(({body})=>{
                 expect(body.msg).toBe('Limit option must be of type number')
+            })
+        })
+    })
+    describe('/api/topics',()=>{
+        test('POST 201: When object with correct properties is sent in the request body, topic is added to database returning a status 201 and an object detailing the topic', ()=>{
+            const newTopic = {"slug":"dogs","description":"Not cats"}
+            return request(app)
+            .post('/api/topics')
+            .expect(201)
+            .send(newTopic)
+            .then(({body})=>{
+                expect(body).toEqual(
+                    expect.objectContaining({newTopic:{
+                        "slug":expect.any(String),
+                        "description":expect.any(String)                    
+                    }})   
+                )
+            })   
+        })
+        test('POST 400: If topic is posted that already exists a status of 400 and an error message is returned',()=>{
+            const newTopic = {"slug":"cats","description":"second cat topic"}
+            return request(app)
+            .post('/api/topics')
+            .expect(400)
+            .send(newTopic)
+            .then(({body})=>{
+                expect(body.msg).toBe('Topic already exists, please change topic name')
+            })
+        })
+        test('POST 400: If one or more of the properties in the request body is missing a status of 400 and an error message should be returned',()=>{
+            const newTopic = {"slug":"birds"}
+            const {slug} = newTopic
+            const {description} = newTopic
+            return request(app)
+            .post('/api/topics')
+            .expect(400)
+            .send(newTopic)
+            .then(({body})=>{
+                if(!slug){
+                    expect(body.msg).toBe('slug must be provided')
+                }
+                if(!description){
+                    expect(body.msg).toBe('description must be provided')
+                }
+                
+            })
+        })
+        test('POST 400: if slug or description is empty a status of 400 and an error message will be returned',()=>{
+            const newTopic = {"slug":"tutrles","description":" "}
+            const {slug} = newTopic
+            const {description} = newTopic
+            const regex = /[a-zA-Z0-9_]+/i;
+            return request(app)
+            .post('/api/topics')
+            .expect(400)
+            .send(newTopic)
+            .then(({body})=>{
+                if(!regex.test(slug)){
+                    expect(body.msg).toBe('slug must contain alpha numeric characters')
+                }
+                if(!regex.test(description)){
+                    expect(body.msg).toBe('description must contain alpha numeric characters')
+                }
+                   
+            })
+        })
+        test('POST 400: if slug or description are of an invalid data type a status of 400 and an error message will be returned to the server',()=>{
+            const newTopic = {"slug":9999,"description":"furry cute animal"}
+            const {slug} = newTopic
+            const {description} = newTopic
+            return request(app)
+            .post('/api/topics')
+            .expect(400)
+            .send(newTopic)
+            .then(({body})=>{
+                if(typeof slug != 'string' ){
+                    expect(body.msg).toBe('slug must be of type string')
+                }
+                if(typeof description != 'string' ){
+                    expect(body.msg).toBe('description must be of type string')
+                }
+              
             })
         })
     })
