@@ -219,6 +219,79 @@
       "exampleResponse":
       {"body":"This is an example comment","votes":"4"}
 
+    },
+    "POST /api/articles":{
+      "description":"Serves as an object representing the result of a posted article - image url defaults to a set image provided by the developer",
+      "queries":[],
+      "examplePayload":{"author":"bill","title":"example title","body":"Main text of the article","topic":"cats","article_img_url":"www.someimageurl.co.uk"},
+      "exampleResponse":{
+        "article_id":"1",
+        "title":"exmaple title",
+        "topic":"cats","author":"bill",
+        "body":"Main text of the article",
+        "votes":"0",
+        "article_img_url":"www.someimageurl.co.uk",
+        "comment_count":"1"}
+    },
+    "GET /api/articles?limit=<limit>&p=<p>":{
+      "description":"Serves as an object containing a total count of all articles and an array of all articles with pagination functionality by providing additional queries to allow a limit to limit the number of responses and page which specifies which page to start at at, calculated using the limit",
+      "queries":["limit", "p"],
+      "exampleResponse":{
+        "total_count": 37,
+        "articles": [
+          {
+            "article_id": 1,
+            "title": "Main title 1",
+            "topic": "bats",
+            "author": "bill",
+            "created_at": "2020-11-22T00:00:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/2403392/pexels-photo-2403392.jpeg?w=700&h=700",
+            "comment_count": 11
+          },
+          {
+            "article_id": 2,
+            "title": "Main title 2",
+            "topic": "lemons",
+            "author": "angie",
+            "created_at": "2020-11-15T00:00:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/10845119/pexels-photo-10845119.jpeg?w=700&h=700",
+            "comment_count": 7
+          }
+        ]
+      }
+
+    },
+    "GET /api/articles/:article_id/comments?limit=<limit>&p=<p>":{
+      "description":"Serves as an object containing an array of all comments by article_id, while also providing pagination functionality by allowing additional queries to allow a limit to limit the number of responses and page which specifies which page to start at at, calculated using the limit",
+      "queries":["article_id"],
+      "exampleResponse":{
+        "comments": [
+          {
+            "comment_id": 1,
+            "votes": 0,
+            "created_at": "2024-04-18T17:01:58.321Z",
+            "author": "bill",
+            "body": "comment body 1",
+            "article_id": 1
+          },
+          {
+            "comment_id": 2,
+            "votes": 0,
+            "created_at": "2024-04-18T15:26:36.399Z",
+            "author": "angie",
+            "body": "comment body 2",
+            "article_id": 1
+          }
+        ]
+      }
+    },
+    "POST /api/topics":{
+      "description":"serves as an object representing the resul of posting a new topic into the database",
+      "queries":[],
+      "examplePayload":{"slug":"topic_name","description":"topic description"},
+      "exampleResponse":{"newTopic":{"slug":"topic_name","description":"topic description"}}
     }
   }
   

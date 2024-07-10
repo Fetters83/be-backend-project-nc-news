@@ -39,33 +39,38 @@ function getAllArticles(req, res, next) {
       
          
           res.status(200).send({total_count:total_count,articles:articles});
+        } else{
+          res.status(200).send({ articles });
         }
-       res.status(200).send({ articles });
+       
       })
       .catch((err) => {
      
         next(err);
       });
-  }
-  Promise.all([
-    fetchAllArticles(topic, sort_by, order, limit,p),
-    checkTopicExists(topic),
-  ])
-    .then(([articles]) => {
-   
-      if(limit || p) {
-        const total_count = Number(articles[0].full_count)
-        for(article of articles){
-         delete article.full_count
+  } else {
+    Promise.all([
+      fetchAllArticles(topic, sort_by, order, limit,p),
+      checkTopicExists(topic),
+    ])
+      .then(([articles]) => {
+     
+        if(limit || p) {
+          const total_count = Number(articles[0].full_count)
+          for(article of articles){
+           delete article.full_count
+          }
+          res.status(200).send({total_count:total_count,articles:articles});
         }
-        res.status(200).send({total_count:total_count,articles:articles});
-      }
-      res.status(200).send({ articles });
-    })
-    .catch((err) => {
-      
-      next(err);
-    });
+        res.status(200).send({ articles });
+      })
+      .catch((err) => {
+        
+        next(err);
+      });
+
+  }
+  
 }
 
 function postVoteByArticleId(req, res, next) {
