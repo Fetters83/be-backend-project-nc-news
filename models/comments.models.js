@@ -94,8 +94,7 @@ function updateCommentVoteByCommentId(inc_votes,comment_id){
         return Promise.reject({status:400,msg:'Bad request'})
     }
     return db.query(incVoteStr,[inc_votes,comment_id]).then((/* {rows} */{rows})=>{
-        //console.log(rows[0])
-        return rows[0]
+              return rows[0]
     })
 }
 
@@ -109,6 +108,15 @@ function checkCommentExists(comment_id){
        
     })
 
+
+
 }
 
-module.exports = {fetchCommentsByArticleId,insertCommentByArticleId,deleteCommentById,updateCommentVoteByCommentId,checkCommentExists}
+function deleteCommentsByArticleId(article_id){
+    const deleteCommentsQuery = `DELETE FROM comments WHERE article_id = $1 RETURNING *;`
+    return db.query(deleteCommentsQuery,[article_id]).then(({rows})=>{
+        return rows
+    })
+}
+
+module.exports = {fetchCommentsByArticleId,insertCommentByArticleId,deleteCommentById,updateCommentVoteByCommentId,checkCommentExists,deleteCommentsByArticleId}

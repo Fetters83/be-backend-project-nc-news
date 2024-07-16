@@ -1,4 +1,6 @@
-const {fetchCommentsByArticleId,insertCommentByArticleId,deleteCommentById, updateCommentVoteByCommentId, checkCommentExists} = require('../models/comments.models')
+const { checkArticleExists } = require('../models/articles.models')
+const {fetchCommentsByArticleId,insertCommentByArticleId,deleteCommentById, updateCommentVoteByCommentId, checkCommentExists, deleteCommentsByArticleId} = require('../models/comments.models')
+
 
 
 function getCommentsByArticleId(req,res,next){
@@ -7,11 +9,6 @@ function getCommentsByArticleId(req,res,next){
     
 
     fetchCommentsByArticleId(article_id,limit,p).then((comments)=>{
-      /*  if(p){
-        if(comments.lenght===0){
-            res.status(400).send({status:400,msg:'Page out of range'})
-        }
-       } */
        res.status(200).send({comments})
     }).catch((err)=>{
         next(err)
@@ -53,5 +50,7 @@ function postVoteByCommentId(req,res,next){
     })
       
 }
+
+
 
 module.exports = {getCommentsByArticleId,postCommentByArticleId,removeCommentById,postVoteByCommentId}

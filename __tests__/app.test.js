@@ -849,6 +849,32 @@ describe('/api/users/:username', ()=>{
             })
         })
     })
+    describe('/api/articles/:article_id',()=>{
+        test('DELETE 204: when article_id is sent in query, the comments associated with the article_id are deleted',()=>{
+            return request(app)
+            .delete('/api/articles/6')
+            .expect(204)
+            .then(({res})=>{
+             expect(res.statusMessage).toBe('No Content')
+            })
+        })
+        test('DELETE 404: when article_id is of a valid data type but does not exist server responds with a status of 404 and an error message',()=>{
+            return request(app)
+            .delete('/api/articles/9999')
+            .expect(404)
+            .then(({body})=>{
+                expect(body.msg).toBe('article does not exist')
+            })
+        })
+        test('DELETE 404: when article_id is of an invalid data type server responds with a status of 400 and an error message',()=>{
+            return request(app)
+            .delete('/api/articles/invalid')
+            .expect(400)
+            .then(({body})=>{
+                expect(body.msg).toBe('Bad request')
+            })
+        })
+    })
                        
                     
             
