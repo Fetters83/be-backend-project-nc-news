@@ -58,53 +58,81 @@ Using Endpoints
 4. In your web API testing software you can make a call to the below endpoints
 
 GET - localhost:9090/api
- - lists all available endpoints in response
+lists all available endpoints in response
+
 GET - localhost:9090/api/topics
- - list all topics in the database
+list all topics in the database
+
 GET - localhost:9090/api/articles
- - lists all articles and their comment count from the database
+lists all articles and their comment count from the database
+
 GET - localhost:9090/api/articles/:article_id
- - lists all articles by the given article_id (replace article_id with a number)
+ lists all articles by the given article_id (replace article_id with a number)
+
 GET - localhost:9090/api/articles/:article_id/comments
- - lists all comments asscoiate with a given article_id (replace article_id with a number)
- POST - localhost:9090/api/articles/:article_id/comments
- - allows you to post comments against the specified article_id in the comments table
- - body to send must be in the format {username:"username",body:"my first comment"}
- PATCH - localhost:9090/api/articles/:article_id
-  - allows you to update the vote count of an article based on the article_id in the articles table
-  - body to send must be in the format {inc_votes:"1"}
-  DELETE - localhost:9090/api/comments/:comment_id
-  - allows you to delete a comment from the comments table based on the comment_id
-  GET localhost:9090/api/users
-   - lists all users in the users table
-  GET -localhost:9090/api/articles/?topic=<query>
-   - lists all articles whilst filtering by the topic specified in the  query
-   - e.g.localhost:9090/api/articles/?topic=cats
-  GET - localhost:9090/api/articles/?sort_by=<query>
-   - lists all articles sorted by the passed sort query e.g. article_id
-   - e.g.localhost:9090/api/articles/?sort_by=title
-  GET - localhost:9090/api/users/:username
-   - lists a user and it's user table details based on the username passed in the query
-   - e.g. ocalhost:9090/api/users/bill
-   PATCH - localhost:9090/api/comments/:comment_id
-   - allows you to update the vote count of a comment based on the comment_id in the comment table
-   - body to send must be in the format {inc_votes:"1"}
-   POST - localhost:9090/api/articles
-   - allows you to post a new article into the articles table
-   - body to send must be in format 
+ lists all comments asscoiate with a given article_id (replace article_id with a number)
+
+POST - localhost:9090/api/articles/:article_id/comments
+allows you to post comments against the specified article_id in the comments table
+
+body to send must be in the format {username:"username",body:"my first comment"}
+
+PATCH - localhost:9090/api/articles/:article_id
+allows you to update the vote count of an article based on the article_id in the articles table
+
+body to send must be in the format {inc_votes:"1"}
+
+DELETE - localhost:9090/api/comments/:comment_id
+allows you to delete a comment from the comments table based on the comment_id
+
+GET localhost:9090/api/users
+lists all users in the users table
+
+GET -localhost:9090/api/articles/?topic=<query>
+lists all articles whilst filtering by the topic specified in the  query
+
+e.g.localhost:9090/api/articles/?topic=cats
+
+GET - localhost:9090/api/articles/?sort_by=<query>
+lists all articles sorted by the passed sort query e.g. article_id
+
+e.g.localhost:9090/api/articles/?sort_by=title
+
+GET - localhost:9090/api/users/:username
+lists a user and it's user table details based on the username passed in the query
+
+e.g. ocalhost:9090/api/users/bill
+   
+PATCH - localhost:9090/api/comments/:comment_id
+allows you to update the vote count of a comment based on the comment_id in the comment table
+
+body to send must be in the format {inc_votes:"1"}
+   
+POST - localhost:9090/api/articles
+allows you to post a new article into the articles table
+
+body to send must be in format 
      {author:"bill",title:"example title",body:"Main text of the article",topic:"cats",article_img_url:"www.someimageurl.co.uk"}
-   GET - localhost:9090/api/articles?limit=<limit>&p=<p>
-    - lists a limited number of articles based on the limit query sent, p indicates the page which the results will sit on - the number of articles are spread across as many pages as possible based on the limit provided
-     - e.g. localhost:9090/api/articles?limit=5&p=1
-   GET - localhost:9090/api/articles/:article_id/comments?limit=<limit>&p=<p>
-    - lists a limited number of comments associated with an article_id based on the limit query sent, p indicates the page which the results will sit on - the number of commentd are spread across as many pages as possible based on the limit provided
-     - e.g. localhost:9090/api/articles/1/limit=5&p=1
-   POST - localhost:9090/api/topics
-    - allows you to post a new topic to the topics table
-    - body to send must be in the format {slug:"topic_name",description:"topic description"}
-   DELETE - localhost:9090/api/articles/:article_id
-    - allows you to delete an article_id and all it's asscoiated comments from the comment table based on the article_id passed in the query
-    - e.g. localhost:9090/api/articles/6
+
+GET - localhost:9090/api/articles?limit=<limit>&p=<p>
+lists a limited number of articles based on the limit query sent, p indicates the page which the results will sit on - the number of articles are spread across as many pages as possible based on the limit provided
+
+e.g. localhost:9090/api/articles?limit=5&p=1
+   
+GET - localhost:9090/api/articles/:article_id/comments?limit=<limit>&p=<p>
+lists a limited number of comments associated with an article_id based on the limit query sent, p indicates the page which the results will sit on - the number of commentd are spread across as many pages as possible based on the limit provided
+
+e.g. localhost:9090/api/articles/1/limit=5&p=1
+   
+POST - localhost:9090/api/topics
+allows you to post a new topic to the topics table
+
+body to send must be in the format {slug:"topic_name",description:"topic description"}
+
+DELETE - localhost:9090/api/articles/:article_id
+allows you to delete an article_id and all it's asscoiated comments from the comment table based on the article_id passed in the query
+
+e.g. localhost:9090/api/articles/6
 
 
 
