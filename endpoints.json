@@ -292,6 +292,11 @@
       "queries":[],
       "examplePayload":{"slug":"topic_name","description":"topic description"},
       "exampleResponse":{"newTopic":{"slug":"topic_name","description":"topic description"}}
+    },
+    "DELETE /api/articles/:article_id":{
+      "description":"serves as an endpoint to allow a user to delete an article_id passed as a parameter - all asociated comments and article_id is delete",
+      "queries":["article_id"],
+      "exampleResponse":{"status":"204","statusMessage":"No Content"}
     }
   }
   

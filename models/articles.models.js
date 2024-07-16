@@ -113,6 +113,7 @@ function checkArticleExists(article_id) {
 
   const getVotesQuery = "SELECT * FROM articles WHERE article_id=$1;";
   return db.query(getVotesQuery, [article_id]).then(({ rows: articles }) => {
+  
     if (articles.length === 0) {
       return Promise.reject({ status: 404, msg: "article does not exist" });
     }
@@ -124,6 +125,7 @@ function updateVoteByArticleId(inc_votes, article_id) {
     "UPDATE articles SET votes=votes + $1 WHERE article_id=$2 RETURNING *;";
 
   if (typeof inc_votes != "number") {
+    
     return Promise.reject({
       status: 400,
       msg: "vote increment must be a number",
@@ -165,10 +167,18 @@ function insertNewArticle(newArticle) {
     });
 }
 
+function deleteArticleByArticleId(article_id){
+  const deleteArticleQuery = `DELETE FROM articles WHERE article_id = $1 RETURNING *;`
+  return db.query(deleteArticleQuery,[article_id]).then(({rows})=>{
+     return rows
+  })
+}
+
 module.exports = {
   fetchArticleById,
   fetchAllArticles,
   updateVoteByArticleId,
   checkArticleExists,
   insertNewArticle,
+  deleteArticleByArticleId
 };
