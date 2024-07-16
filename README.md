@@ -101,7 +101,7 @@ e.g.localhost:9090/api/articles/?sort_by=title
 GET - localhost:9090/api/users/:username
 lists a user and it's user table details based on the username passed in the query
 
-e.g. ocalhost:9090/api/users/bill
+e.g. localhost:9090/api/users/bill
    
 PATCH - localhost:9090/api/comments/:comment_id
 allows you to update the vote count of a comment based on the comment_id in the comment table
