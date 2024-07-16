@@ -288,7 +288,7 @@
       }
     },
     "POST /api/topics":{
-      "description":"serves as an object representing the resul of posting a new topic into the database",
+      "description":"serves as an object representing the result of posting a new topic into the database",
       "queries":[],
       "examplePayload":{"slug":"topic_name","description":"topic description"},
       "exampleResponse":{"newTopic":{"slug":"topic_name","description":"topic description"}}
