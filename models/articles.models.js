@@ -28,6 +28,7 @@ function fetchAllArticles(topic, sort_by, order, limit, p) {
     "created_at",
     "votes",
     "article_img_url",
+    "comment_count"
   ];
 
 
