@@ -944,8 +944,8 @@ describe('/api/users/:username', ()=>{
             .get('/api/article_votes')
             .expect(200)
             .send({username:'rogersop',article_id:1})
-            .then(({body:{result}})=>{
-                expect(result.msg).toBe(false)
+            .then(({body:{isInTable}})=>{
+                expect(isInTable.msg).toBe(false)
             })
         })
     })
