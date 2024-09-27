@@ -12,6 +12,7 @@ articlesRouter.patch('/:article_id',postVoteByArticleId)
 articlesRouter.post('/:article_id/comments',postCommentByArticleId)
 //post new article
 articlesRouter.post('/',postNewArticle)
-module.exports = articlesRouter;
+
 //delete articles
 articlesRouter.delete('/:article_id',removeArticleByArticleId)
+module.exports = articlesRouter;

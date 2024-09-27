@@ -39,7 +39,7 @@ describe('api/topics',()=>{
     })
 })
 
-describe('/api',()=>{
+ describe('/api',()=>{
     test('GET:200 responds with an object detailing all available endpoints in the app',()=>{
         return request(app)
         .get('/api')
@@ -248,7 +248,7 @@ describe('/api/articles/:article_id/comments',()=>{
 })
 describe('/api/articles/:article_id',()=>{
     test('PATCH:200 when request body pass in with a inc_votes value of 1, articles_id total vote count should increase by 1',()=>{
-        const vote = {inc_votes: 1}
+        const vote = {inc_votes: 1,username:'butter_bridge'}
         const expectedObject = {
             article_id: 1,
             title: 'Living in the shadow of a great man',
@@ -269,9 +269,9 @@ describe('/api/articles/:article_id',()=>{
          })
     })
     test('Patch:400 when passed an object with an incorrect data inc_vote data type, an object is returned with a status of 400 and an err message',()=>{
-        const vote = {inc_votes: 'invalid_vote'}
+        const vote = {inc_votes: 'invalid_vote',username:'rogersop'}
         return request(app)
-        .patch('/api/articles/1')
+        .patch('/api/articles/2')
         .expect(400)
         .send(vote)
         .then(({body})=>{
@@ -279,7 +279,7 @@ describe('/api/articles/:article_id',()=>{
         })
     })
     test('Patch:404 when passed a non existent article_id of the correct data type, an object is returned with a status of 404 and an err message',()=>{
-        const vote = {inc_votes: 1}
+        const vote = {inc_votes: 1,username:'rogersop'}
         return request(app)
         .patch('/api/articles/9999')
         .expect(404)
@@ -289,7 +289,7 @@ describe('/api/articles/:article_id',()=>{
         })
     })
     test('Patch:400 when passed an article_id of an incorrect data type, an object is returned with a status of 400 and an err message',()=>{
-        const vote = {inc_votes: 1}
+        const vote = {inc_votes: 1,username:'rogersop'}
         return request(app)
         .patch('/api/articles/invalid_id')
         .expect(400)
@@ -298,6 +298,68 @@ describe('/api/articles/:article_id',()=>{
             expect(body.msg).toBe('Bad request')
         })
     })
+     test('Patch:404 when the same user votes on an article twice the returned object should only have a vote increase of 1',()=>{
+        const vote = {inc_votes: 1,username:'icellusedkars'}
+        const expectedObject = {
+            article_id: 1,
+            title: 'Living in the shadow of a great man',
+            topic: 'mitch',
+            author: 'butter_bridge',
+            body: 'I find this existence challenging',
+            created_at: '2020-07-09T20:11:00.000Z',
+            votes: 102,
+            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+        }
+        return request(app)
+        .patch('/api/articles/1')
+        .expect(200)
+        .send(vote)
+        .then(({body:{updatedArticleVoteCount}})=>{
+           expect(updatedArticleVoteCount).toMatchObject(expectedObject)
+
+         return request(app)
+        .patch('/api/articles/1')
+        .expect(404)
+        .send(vote)
+        .then(({body})=>{
+           expect(body.msg).toBe('you cannot vote again on this article')
+          
+         }) 
+          
+         })
+         
+    }) 
+    test('Patch:404 when the same user down votes on an article twice the returned object should only have a vote decrease of 1',()=>{
+        const vote = {inc_votes: -1,username:'icellusedkars'}
+        const expectedObject = {
+            article_id: 1,
+            title: 'Living in the shadow of a great man',
+            topic: 'mitch',
+            author: 'butter_bridge',
+            body: 'I find this existence challenging',
+            created_at: '2020-07-09T20:11:00.000Z',
+            votes: 101,
+            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+        }
+        return request(app)
+        .patch('/api/articles/1')
+        .expect(200)
+        .send(vote)
+        .then(({body:{updatedArticleVoteCount}})=>{
+           expect(updatedArticleVoteCount).toMatchObject(expectedObject)
+
+         return request(app)
+        .patch('/api/articles/1')
+        .expect(404)
+        .send(vote)
+        .then(({body})=>{
+           expect(body.msg).toBe('you cannot remove vote on this article as there is no existing vote')
+          
+         }) 
+          
+         })
+         
+    }) 
 })
 describe('/api/comments/:comment_id',()=>{
     test('DELETE:204 when passed a valid comment_id, an object with the status 204 is returned',()=>{
@@ -872,6 +934,18 @@ describe('/api/users/:username', ()=>{
             .expect(400)
             .then(({body})=>{
                 expect(body.msg).toBe('Bad request')
+            })
+        })
+    })
+
+    describe('/api/article_votes',()=>{
+        test('GET 200 - when the combination of a username and article_id are not found in the article_votes table false a status of 200 and msg of false is returned',()=>{
+            return request(app)
+            .get('/api/article_votes')
+            .expect(200)
+            .send({username:'rogersop',article_id:1})
+            .then(({body})=>{
+                expect(body.msg).toBe(false)
             })
         })
     })

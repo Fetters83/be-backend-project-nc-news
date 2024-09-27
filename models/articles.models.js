@@ -122,8 +122,10 @@ function checkArticleExists(article_id) {
 }
 
 function updateVoteByArticleId(inc_votes, article_id) {
+  
   const updateVoteQuery =
     "UPDATE articles SET votes=votes + $1 WHERE article_id=$2 RETURNING *;";
+
 
   if (typeof inc_votes != "number") {
     
@@ -133,9 +135,13 @@ function updateVoteByArticleId(inc_votes, article_id) {
     });
   }
 
-  return db.query(updateVoteQuery, [inc_votes, article_id]).then(({ rows }) => {
-    return rows[0];
-  });
+  
+    return db.query(updateVoteQuery, [inc_votes, article_id]).then(({ rows }) => {
+      return rows[0];
+    });
+
+
+  
 }
 
 function insertNewArticle(newArticle) {

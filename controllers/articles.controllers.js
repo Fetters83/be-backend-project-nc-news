@@ -7,6 +7,11 @@ const {
   insertNewArticle,
   deleteArticleByArticleId,
 } = require("../models/articles.models");
+const {
+  fetchArticleVotesByUserId,
+  fetchArticleVoteValid,
+  insertOrDeleteArticleVote,
+} = require("../models/articles_comments.models");
 const { deleteCommentsByArticleId } = require("../models/comments.models");
 const { checkTopicExists } = require("../models/topics.models");
 const { fetchUserByUserName } = require("../models/users.models");
@@ -71,11 +76,22 @@ function getAllArticles(req, res, next) {
 function postVoteByArticleId(req, res, next) {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
+  const { username } = req.body;
 
-  Promise.all([
-    updateVoteByArticleId(inc_votes, article_id),
-    checkArticleExists(article_id),
-  ])
+  fetchArticleVotesByUserId(username, article_id)
+    .then((result) => {
+      return result;
+    })
+    .then((result) => {
+      return fetchArticleVoteValid(inc_votes, result);
+    })
+    .then(() => {
+      return Promise.all([
+        updateVoteByArticleId(inc_votes, article_id),
+        checkArticleExists(article_id),
+        insertOrDeleteArticleVote(username, article_id, inc_votes),
+      ]);
+    })
     .then(([result]) => {
       res.status(200).send({ updatedArticleVoteCount: result });
     })
