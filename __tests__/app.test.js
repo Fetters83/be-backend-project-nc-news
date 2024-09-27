@@ -941,7 +941,7 @@ describe('/api/users/:username', ()=>{
     describe('/api/article_votes',()=>{
         test('GET 200 - when the combination of a username and article_id are not found in the article_votes table false a status of 200 and msg of false is returned',()=>{
             return request(app)
-            .get('/api/article_votes')
+            .post('/api/article_votes')
             .expect(200)
             .send({username:'rogersop',article_id:1})
             .then(({body:{isInTable}})=>{

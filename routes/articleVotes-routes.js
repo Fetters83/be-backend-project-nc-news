@@ -5,7 +5,7 @@ const articleVotesRouter = require('express').Router()
 //Get result of checking the article votes table
 //Determines if a user has aleady voted against a specific article_id
 
-articleVotesRouter.get('/',getArticleVoteByUserId)
+/* articleVotesRouter.get('/',getArticleVoteByUserId) */
 
-
+articleVotesRouter.post('/',getArticleVoteByUserId)
 module.exports = articleVotesRouter;
