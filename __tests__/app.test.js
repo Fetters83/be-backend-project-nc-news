@@ -319,7 +319,7 @@ describe('/api/articles/:article_id',()=>{
 
          return request(app)
         .patch('/api/articles/1')
-        .expect(404)
+        .expect(200)
         .send(vote)
         .then(({body})=>{
            expect(body.msg).toBe('you cannot vote again on this article')
@@ -350,7 +350,7 @@ describe('/api/articles/:article_id',()=>{
 
          return request(app)
         .patch('/api/articles/1')
-        .expect(404)
+        .expect(200)
         .send(vote)
         .then(({body})=>{
            expect(body.msg).toBe('you cannot remove vote on this article as there is no existing vote')

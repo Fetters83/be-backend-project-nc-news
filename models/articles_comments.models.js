@@ -19,13 +19,13 @@ function fetchArticleVotesByUserId(username, article_id) {
 function fetchArticleVoteValid(inc_votes, result) {
   if (result === true && inc_votes === 1) {
     return Promise.reject({
-      status: 404,
+      status: 200,
       msg: "you cannot vote again on this article",
     });
   }
   if (result === false && inc_votes === -1) {
     return Promise.reject({
-      status: 404,
+      status: 200,
       msg: "you cannot remove vote on this article as there is no existing vote",
     });
   }
